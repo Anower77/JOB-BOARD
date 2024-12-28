@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<section class="site-section">
+  <div class="container">
+    <div class="row align-items-center mb-5">
+      <div class="col-lg-8 mb-4 mb-lg-0">
+        <div class="d-flex align-items-center">
+          <div>
+            <h2>Post A Job</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" class="p-4 border rounded">
+      {% csrf_token %}
+      
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          
+          {% if field.name == 'job_type' %}
+            <select name="job_type" class="form-control">
+              <option value="">Select Job Type</option>
+              <option value="1">Full time</option>
+              <option value="2">Part time</option>
+              <option value="3">Internship</option>
+            </select>
+          
+          {% elif field.name == 'category' %}
+            <select name="category" class="form-control">
+              <option value="">Select Category</option>
+              {% for category in form.category.field.queryset %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          
+          {% else %}
+            {{ field }}
+          {% endif %}
+
+          {% if field.errors %}
+            <div class="alert alert-danger mt-2">
+              {{ field.errors }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary">Post Job</button>
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{{ form.media }}
+{% endblock %}
