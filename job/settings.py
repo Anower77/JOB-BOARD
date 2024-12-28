@@ -17,14 +17,13 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&c0+0gn1+n7^=2t0as2lg)b4akg0ce656&z9-peqo_2r#6bv-o'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-&c0+0gn1+n7^=2t0as2lg)b4akg0ce656&z9-peqo_2r#6bv-o')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('VERCEL_ENV') != 'production'  # True for development, False in production
@@ -109,31 +108,17 @@ AUTH_USER_MODEL = 'account.CustomUser'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'NAME': os.getenv('POSTGRES_DATABASE') if os.getenv("VERCEL_ENV") else env('DB_NAME'),
+        'USER': os.getenv('POSTGRES_USER') if os.getenv("VERCEL_ENV") else env('DB_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD') if os.getenv("VERCEL_ENV") else env('DB_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST') if os.getenv("VERCEL_ENV") else env('DB_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432') if os.getenv("VERCEL_ENV") else env('DB_PORT'),
+        'OPTIONS': {
+            'sslmode': 'require',
+            'connect_timeout': 30,
+        } if os.getenv("VERCEL_ENV") else {},
     }
 }
-
-# Database configuration for Vercel
-if os.getenv("VERCEL_ENV"):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DATABASE'),
-            'USER': os.getenv('POSTGRES_USER'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_HOST'),
-            'PORT': os.getenv('POSTGRES_PORT', '5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-                'connect_timeout': 30,
-            }
-        }
-    }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -231,30 +216,23 @@ LOGGING = {
             'format': '[{levelname}] {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
-        'simple': {
-            'format': '[{levelname}] {message}',
-            'style': '{',
-        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+            'formatter': 'verbose',
+            'level': 'DEBUG' if os.getenv("VERCEL_ENV") else 'INFO',
         },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'level': 'DEBUG' if os.getenv("VERCEL_ENV") else 'INFO',
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'WARNING',
+            'level': 'DEBUG' if os.getenv("VERCEL_ENV") else 'WARNING',
             'propagate': False,
         },
     },
@@ -292,3 +270,22 @@ if not DEBUG:
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ffjf xejb lmyl xkrc
+
+if os.getenv("VERCEL_ENV"):
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'level': 'DEBUG',
+            },
+        },
+        'loggers': {
+            'django.db.backends': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+        },
+    }
