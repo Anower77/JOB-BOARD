@@ -1,11 +1,20 @@
 {
   "builds": [
     {
-      "src": "  /wsgi.py",
-      "use": "@vercel/python"
+      "src": "job/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9",
+        "installCommand": "pip install --no-cache-dir -r requirements.txt"
+      }
     }
   ],
   "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "job/wsgi.py"

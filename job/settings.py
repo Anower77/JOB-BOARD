@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import environ
 env = environ.Env()
-import dj_database_url
 environ.Env.read_env()
 from pathlib import Path
 
@@ -27,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1', '.now.sh']
 
@@ -108,11 +107,6 @@ WSGI_APPLICATION = 'job.wsgi.app'
 
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://postgres:postgres@localhost:5432/job')
-}
-
-
-DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DB_NAME'),
@@ -161,6 +155,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -179,15 +177,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Taggit configuration
 TAGGIT_CASE_INSENSITIVE = True
 
-# Add CKEditor configuration
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 300,
-        'width': '100%',
-    },
-}
-
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 # Email Configuration
@@ -200,10 +189,7 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Job Portal <anowerhossain765562@gmail.com>')
 
-# Add these settings for static files
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Add this for Vercel
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ffjf xejb lmyl xkrc
