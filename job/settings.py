@@ -196,3 +196,5 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Job Portal <anowerhossai
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ffjf xejb lmyl xkrc
+
+PORT = int(os.getenv('PORT', 8000))
