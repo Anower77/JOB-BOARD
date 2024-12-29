@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import environ
 env = environ.Env()
+import dj_database_url
 environ.Env.read_env()
 from pathlib import Path
 
@@ -104,6 +105,12 @@ WSGI_APPLICATION = 'job.wsgi.app'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+
+DATABASES = {
+    'default': dj_database_url.config(default='postgres://postgres:postgres@localhost:5432/job')
+}
+
 
 DATABASES = {
     'default': {
