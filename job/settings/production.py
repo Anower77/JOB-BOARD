@@ -3,6 +3,9 @@ from .base import *
 DEBUG = False
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh']
 
+# Add port configuration
+PORT = int(os.getenv('PORT', 8000))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
